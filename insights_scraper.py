@@ -7,7 +7,6 @@ WEB_PAGE = "http://www.insightsonindia.com/"
 
 # hit page
 response = requests.get(WEB_PAGE)
-#print(response.status_code)
 content = response.content
 
 # make soup; parse web pages
@@ -18,17 +17,8 @@ body = soup.body
 list_latest_current_events = body.find_all(href=re.compile("insights-daily-current-events-"),limit=5)
 list_latest_insights = body.find_all(href=re.compile("insights-into-editorial-"),limit=5)
 
-
-##for index,value in enumerate(list_latest_current_events):
-##    insights = list_latest_insights[index]
-##    print(insights.contents,"--",insights['href'])
-##    print(value.contents,"--",value['href'])
-
 def fetch(link):
-    #print(link)
-    #headers={"X-Requested-With":"XMLHttpRequest","User-Agent":"Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36"}
     response = requests.get(link)
-    # print(response.status_code)
     if response.status_code != 200: return False
     content = response.content
     s = BeautifulSoup(content,'html.parser')
@@ -42,13 +32,7 @@ def fetch(link):
         d.decompose()
     # remove google's insert tag
     data.find('ins').decompose()
-    
-    #with open("test.html", "w") as myfile:
-    #    myfile.write(data.prettify())
     return data
-
-msg_body = fetch(list_latest_current_events[0]['href'])
-
 
 def send_email(user, pwd, recipients, subject, body):
     import smtplib
@@ -58,16 +42,9 @@ def send_email(user, pwd, recipients, subject, body):
     msg['Subject'] = subject
     msg['From'] = user
     msg['To'] =  ", ".join(recipients)
-    #html_c = body
-    #msg.attach(MIMEText(html_c, 'html'))
 
     FROM = user
     TO = recipients if type(recipients) is list else [recipients]
-    
-    #SUBJECT = subject
-    #TEXT = body.encode('utf-8')
-    # Prepare actual message
-    #message = """\From: %s\nTo: %s\n MIME-Version: 1.0\nContent-type: text/html\nSubject: %s\n\n%s""" % (FROM, ", ".join(TO), SUBJECT, TEXT)
     
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
@@ -79,6 +56,10 @@ def send_email(user, pwd, recipients, subject, body):
         print('successfully sent the mail')
     except:
         print("failed to send mail")
+
+		
+
+msg_body = fetch(list_latest_current_events[0]['href'])
 
 receivers = ['xyz@gmail.com']
 message = msg_body.prettify()
