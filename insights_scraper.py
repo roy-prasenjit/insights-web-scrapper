@@ -4,7 +4,6 @@ import re
 
 WEB_PAGE = "http://www.insightsonindia.com/"
 
-
 # hit page
 response = requests.get(WEB_PAGE)
 content = response.content
